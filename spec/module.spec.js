@@ -9,10 +9,6 @@ describe("module()", function () {
         }.bind(this));
     });
 
-    it("blah", function () {
-        expect(this.result).toBeDefined();
-    });
-
     it("should transform callee to QUnit.module", function () {
         expect(this.result.callee.type).toBe("MemberExpression");
         expect(this.result.callee.object).toEqual({
