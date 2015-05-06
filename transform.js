@@ -3,7 +3,8 @@ var traverse = require("traverse");
 
 var transformers = [
     require("./transformers/module"),
-    require("./transformers/test")
+    require("./transformers/test"),
+    require("./transformers/assertions")
 ];
 
 module.exports = function transform(syntax) {
