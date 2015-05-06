@@ -1,0 +1,1 @@
+strictEqual(foo, 4);

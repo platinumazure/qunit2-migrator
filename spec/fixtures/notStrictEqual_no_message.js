@@ -1,0 +1,1 @@
+notStrictEqual(foo, 4);
