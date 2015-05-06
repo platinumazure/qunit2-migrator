@@ -41,4 +41,6 @@ module.exports = function transform(syntax) {
             });
         }
     });
+
+    return syntax;
 }

@@ -8,7 +8,7 @@ function processFile (file) {
         if (err) throw err;
 
         var syntax = esprima.parse(contents);
-        transform(syntax);
+        syntax = transform(syntax);
 
         console.log(JSON.stringify(syntax, null, 2));
     });
