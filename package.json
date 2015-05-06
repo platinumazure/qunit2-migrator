@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "description": "Migration tool for creating QUnit test files which conform to QUnit 2.x API specifications.",
   "main": "migrate.js",
+  "files": [
+    "migrate.js",
+    "transform.js"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
