@@ -10,7 +10,7 @@ function processFile (file) {
         var syntax = esprima.parse(contents);
         transform(syntax);
 
-        console.log(syntax);
+        console.log(JSON.stringify(syntax, null, 2));
     });
 }
 
