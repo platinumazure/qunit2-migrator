@@ -1,5 +1,6 @@
-var fs = require("fs");
+var escodegen = require("escodegen");
 var esprima = require("esprima");
+var fs = require("fs");
 
 var transform = require("./transform");
 
@@ -11,6 +12,8 @@ function processFile (file) {
         syntax = transform(syntax);
 
         console.log(JSON.stringify(syntax, null, 2));
+
+        console.log(escodegen.generate(syntax));
     });
 }
 
