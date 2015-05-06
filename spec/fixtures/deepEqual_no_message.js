@@ -1,0 +1,1 @@
+deepEqual(foo, 4);
