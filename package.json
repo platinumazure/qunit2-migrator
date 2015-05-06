@@ -12,6 +12,7 @@
   },
   "dependencies": {
       "esprima": "2.2.0",
+      "extend": "2.0.1",
       "traverse": "0.6.6"
   },
   "devDependencies": {
