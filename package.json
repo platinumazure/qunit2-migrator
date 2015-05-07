@@ -6,10 +6,11 @@
       "url": "https://github.com/platinumazure/qunit2-migrator.git"
   },
   "description": "Migration tool for creating QUnit test files which conform to QUnit 2.x API specifications.",
-  "main": "migrate.js",
+  "main": "main.js",
   "files": [
-    "migrate.js",
-    "transform.js"
+    "main.js",
+    "transform.js",
+    "transformers"
   ],
   "scripts": {
     "test": "grunt"
