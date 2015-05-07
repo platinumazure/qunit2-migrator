@@ -7,6 +7,6 @@ module.exports = function (filePath, callback) {
         if (err) return callback(err);
 
         var syntax = recast.parse(fileContents);
-        callback(null, transform(syntax));
+        callback(null, transform(syntax).program);
     });
 }
