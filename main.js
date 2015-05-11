@@ -10,8 +10,6 @@ function processFile (file) {
         var syntax = recast.parse(contents);
         syntax = transform(syntax);
 
-        console.log(JSON.stringify(syntax, null, 2));
-
         console.log(recast.print(syntax).code);
     });
 }
