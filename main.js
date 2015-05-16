@@ -4,6 +4,8 @@ var recast = require("recast");
 
 var transform = require("./transform");
 
+var VALID_OUTPUT_MODES = ["syntaxTreePreTransform", "syntaxTreePostTransform", "transformedFile"];
+
 function writeOutput (outputFile, contents, callback) {
     if (outputFile) {
         fs.writeFile(outputFile, contents, "utf8", callback);
@@ -18,47 +20,52 @@ function onOutput (err) {
     process.exit(0);
 }
 
-function processFile (options) {
-    if (options.inputFile) {
-        fs.readFile(options.inputFile, "utf8", function (err, contents) {
-            if (err) throw err;
-
-            var syntax = recast.parse(contents);
-
-            switch (options.outputMode) {
-                case "syntaxTreePreTransform":
-                    writeOutput(
-                        options.outputFile,
-                        JSON.stringify(syntax, null, 4),
-                        onOutput
-                    );
-                    break;
-
-                case "syntaxTreePostTransform":
-                    syntax = transform(syntax);
-                    writeOutput(
-                        options.outputFile,
-                        JSON.stringify(syntax, null, 4),
-                        onOutput
-                    );
-                    break;
-
-                case "transformedFile":
-                    syntax = transform(syntax);
-                    writeOutput(
-                        options.outputFile,
-                        recast.print(syntax).code, 
-                        onOutput
-                    );
-                    break;
-
-                default:
-                    throw new Error("Invalid output mode");
-            }
-        });
-    } else {
-        throw new Error("No file supplied");
+function validateOptions (options) {
+    if (!options.inputFile) {
+        throw new Error("No input file was provided");
     }
+
+    if (VALID_OUTPUT_MODES.indexOf(options.outputMode) === -1) {
+        throw new Error("Invalid output mode");
+    }
+}
+
+function processFile (options) {
+    validateOptions(options);
+
+    fs.readFile(options.inputFile, "utf8", function (err, contents) {
+        if (err) throw err;
+
+        var syntax = recast.parse(contents);
+
+        switch (options.outputMode) {
+            case "syntaxTreePreTransform":
+                writeOutput(
+                    options.outputFile,
+                    JSON.stringify(syntax, null, 4),
+                    onOutput
+                );
+                break;
+
+            case "syntaxTreePostTransform":
+                syntax = transform(syntax);
+                writeOutput(
+                    options.outputFile,
+                    JSON.stringify(syntax, null, 4),
+                    onOutput
+                );
+                break;
+
+            case "transformedFile":
+                syntax = transform(syntax);
+                writeOutput(
+                    options.outputFile,
+                    recast.print(syntax).code,
+                    onOutput
+                );
+                break;
+        }
+    });
 }
 
 module.exports = processFile;
