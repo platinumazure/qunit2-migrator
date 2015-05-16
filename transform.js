@@ -4,7 +4,8 @@ var traverse = require("traverse");
 var transformers = [
     require("./transformers/module"),
     require("./transformers/test"),
-    require("./transformers/assertions")
+    require("./transformers/assertions"),
+    require("./transformers/moduleHooks")
 ];
 
 module.exports = function transform(syntax) {
