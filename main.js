@@ -6,7 +6,6 @@ var transform = require("./transform");
 
 function processFile (argv) {
     var file = argv._[0];
-    var output = argv.output || "transformedFile";
 
     if (file) {
         fs.readFile(file, "utf8", function (err, contents) {
@@ -14,7 +13,7 @@ function processFile (argv) {
 
             var syntax = recast.parse(contents);
 
-            switch (output) {
+            switch (argv.output) {
                 case "syntaxTreePreTransform":
                     console.log(JSON.stringify(syntax, null, 4));
                     break;
@@ -43,7 +42,7 @@ module.exports = processFile;
 if (require.main === module) {
     var argv = minimist(process.argv.slice(2), {
         default: {
-            output: null
+            output: "transformedFile"
         }
     });
 
