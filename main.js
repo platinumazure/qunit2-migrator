@@ -17,7 +17,7 @@ function printUsageAndExit (errorMessage) {
 
     console.log("Usage: " +
         "node main.js " +
-        " [--outputMode=MODE] [--outputFile=FILE] INPUTFILE"
+        " [--outputMode=MODE] [--outputFile=FILE | --inPlace] INPUTFILE"
     );
 
     console.log("");
@@ -47,6 +47,14 @@ function validateOptions (options) {
 
     if (VALID_OUTPUT_MODES.indexOf(options.outputMode) === -1) {
         throw new OptionValidationError("Invalid output mode");
+    }
+
+    if (options.inPlace && options.outputFile) {
+        throw new OptionValidationError(
+            "Cannot set inPlace option and provide an output file"
+        );
+    } else if (options.inPlace) {
+        options.outputFile = options.inputFile;
     }
 }
 
@@ -95,13 +103,15 @@ if (require.main === module) {
         default: {
             outputMode: "transformedFile",
             outputFile: null
-        }
+        },
+        boolean: ["inPlace"]
     });
 
     var options = {
         inputFile: argv._[0],
         outputFile: argv.outputFile,
-        outputMode: argv.outputMode
+        outputMode: argv.outputMode,
+        inPlace: argv.inPlace
     };
 
     try {
