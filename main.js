@@ -6,6 +6,26 @@ var transform = require("./transform");
 
 var VALID_OUTPUT_MODES = ["syntaxTreePreTransform", "syntaxTreePostTransform", "transformedFile"];
 
+function OptionValidationError (message) { this.message = message; }
+OptionValidationError.prototype = new Error();
+
+function printUsageAndExit (errorMessage) {
+    if (errorMessage) {
+        console.log(errorMessage);
+        console.log("");
+    }
+
+    console.log("Usage: " +
+        "node main.js " +
+        " [--outputMode=MODE] [--outputFile=FILE] INPUTFILE"
+    );
+
+    console.log("");
+    console.log("Valid output modes are " +
+        VALID_OUTPUT_MODES.map(function (m) { return '"' + m + '"' }).join(", ")
+    );
+}
+
 function writeOutput (outputFile, contents, callback) {
     if (outputFile) {
         fs.writeFile(outputFile, contents, "utf8", callback);
@@ -22,11 +42,11 @@ function onOutput (err) {
 
 function validateOptions (options) {
     if (!options.inputFile) {
-        throw new Error("No input file was provided");
+        throw new OptionValidationError("No input file was provided");
     }
 
     if (VALID_OUTPUT_MODES.indexOf(options.outputMode) === -1) {
-        throw new Error("Invalid output mode");
+        throw new OptionValidationError("Invalid output mode");
     }
 }
 
@@ -84,7 +104,15 @@ if (require.main === module) {
         outputMode: argv.outputMode
     };
 
-    processFile(options);
+    try {
+        processFile(options);
+    } catch (err) {
+        if (err instanceof OptionValidationError) {
+            printUsageAndExit(err && err.message);
+        } else {
+            throw err;
+        }
+    }
 
     // Ensure stdout flushes
     process.on("exit", function (exitCode) {
