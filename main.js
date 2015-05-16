@@ -4,28 +4,41 @@ var recast = require("recast");
 
 var transform = require("./transform");
 
-function processFile (argv) {
-    var file = argv._[0];
+var outputFile;
 
-    if (file) {
-        fs.readFile(file, "utf8", function (err, contents) {
+function writeOutput (contents) {
+    if (outputFile) {
+        fs.writeFile(outputFile, contents, "utf8", function (err, contents) {
+            if (err) throw err;
+        });
+    } else {
+        console.log(contents);
+    }
+}
+
+function processFile (argv) {
+    var inputFile = argv._[0];
+    outputFile = argv.outputFile;
+
+    if (inputFile) {
+        fs.readFile(inputFile, "utf8", function (err, contents) {
             if (err) throw err;
 
             var syntax = recast.parse(contents);
 
-            switch (argv.output) {
+            switch (argv.outputMode) {
                 case "syntaxTreePreTransform":
-                    console.log(JSON.stringify(syntax, null, 4));
+                    writeOutput(JSON.stringify(syntax, null, 4));
                     break;
 
                 case "syntaxTreePostTransform":
                     syntax = transform(syntax);
-                    console.log(JSON.stringify(syntax, null, 4));
+                    writeOutput(JSON.stringify(syntax, null, 4));
                     break;
 
                 case "transformedFile":
                     syntax = transform(syntax);
-                    console.log(recast.print(syntax).code);
+                    writeOutput(recast.print(syntax).code);
                     break;
 
                 default:
@@ -42,7 +55,8 @@ module.exports = processFile;
 if (require.main === module) {
     var argv = minimist(process.argv.slice(2), {
         default: {
-            output: "transformedFile"
+            outputMode: "transformedFile",
+            outputFile: null
         }
     });
 
