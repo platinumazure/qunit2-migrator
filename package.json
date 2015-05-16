@@ -1,6 +1,6 @@
 {
   "name": "qunit2-migrator",
-  "version": "0.1.0",
+  "version": "0.1.1-pre",
   "repository": {
       "type": "git",
       "url": "https://github.com/platinumazure/qunit2-migrator.git"
