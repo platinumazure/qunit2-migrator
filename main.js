@@ -4,9 +4,7 @@ var recast = require("recast");
 
 var transform = require("./transform");
 
-var outputFile;
-
-function writeOutput (contents, callback) {
+function writeOutput (outputFile, contents, callback) {
     if (outputFile) {
         fs.writeFile(outputFile, contents, "utf8", callback);
     } else {
@@ -20,29 +18,38 @@ function onOutput (err) {
     process.exit(0);
 }
 
-function processFile (argv) {
-    var inputFile = argv._[0];
-    outputFile = argv.outputFile;
-
-    if (inputFile) {
-        fs.readFile(inputFile, "utf8", function (err, contents) {
+function processFile (options) {
+    if (options.inputFile) {
+        fs.readFile(options.inputFile, "utf8", function (err, contents) {
             if (err) throw err;
 
             var syntax = recast.parse(contents);
 
-            switch (argv.outputMode) {
+            switch (options.outputMode) {
                 case "syntaxTreePreTransform":
-                    writeOutput(JSON.stringify(syntax, null, 4), onOutput);
+                    writeOutput(
+                        options.outputFile,
+                        JSON.stringify(syntax, null, 4),
+                        onOutput
+                    );
                     break;
 
                 case "syntaxTreePostTransform":
                     syntax = transform(syntax);
-                    writeOutput(JSON.stringify(syntax, null, 4), onOutput);
+                    writeOutput(
+                        options.outputFile,
+                        JSON.stringify(syntax, null, 4),
+                        onOutput
+                    );
                     break;
 
                 case "transformedFile":
                     syntax = transform(syntax);
-                    writeOutput(recast.print(syntax).code, onOutput);
+                    writeOutput(
+                        options.outputFile,
+                        recast.print(syntax).code, 
+                        onOutput
+                    );
                     break;
 
                 default:
@@ -64,7 +71,13 @@ if (require.main === module) {
         }
     });
 
-    processFile(argv);
+    var options = {
+        inputFile: argv._[0],
+        outputFile: argv.outputFile,
+        outputMode: argv.outputMode
+    };
+
+    processFile(options);
 
     // Ensure stdout flushes
     process.on("exit", function (exitCode) {
