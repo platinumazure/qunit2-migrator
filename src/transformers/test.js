@@ -1,13 +1,16 @@
 var extend = require("extend");
 
 module.exports = {
-    matches: function (node) {
+    matches: function (context) {
+        var node = context.node;
+
         return node.type === "CallExpression" &&
             node.callee &&
             node.callee.type === "Identifier" &&
             node.callee.name === "test";
     },
-    onMatch: function (node, context) {
+    onMatch: function (context) {
+        var node = context.node;
         var shouldAddAssert = node.arguments &&
             node.arguments[1] &&
             node.arguments[1].params &&

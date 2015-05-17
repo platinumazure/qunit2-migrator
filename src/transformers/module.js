@@ -1,13 +1,17 @@
 var extend = require("extend");
 
 module.exports = {
-    matches: function (node) {
+    matches: function (context) {
+        var node = context.node;
+
         return node.type === "CallExpression" &&
             node.callee &&
             node.callee.type === "Identifier" &&
             node.callee.name === "module";
     },
-    onMatch: function (node, context) {
+    onMatch: function (context) {
+        var node = context.node;
+
         var updatedValue = extend({}, node, {
             callee: {
                 type: "MemberExpression",

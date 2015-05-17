@@ -21,10 +21,10 @@ var propertyNameMappings = {
 };
 
 module.exports = {
-    matches: function (node, context) {
-        return node &&
-            node.type === "Identifier" &&
-            propertyNameMappings.hasOwnProperty(node.name) &&
+    matches: function (context) {
+        return context.node &&
+            context.node.type === "Identifier" &&
+            propertyNameMappings.hasOwnProperty(context.node.name) &&
             context.key === "key" &&
             context.parent &&
             context.parent.node &&
@@ -38,9 +38,9 @@ module.exports = {
             context.parent.parent.parent.parent.parent.node.callee &&
             isModule(context.parent.parent.parent.parent.parent.node.callee);
     },
-    onMatch: function (node, context) {
-        context.update(extend({}, node, {
-            name: propertyNameMappings[node.name]
+    onMatch: function (context) {
+        context.update(extend({}, context.node, {
+            name: propertyNameMappings[context.node.name]
         }));
     }
 };

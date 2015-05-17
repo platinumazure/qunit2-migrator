@@ -13,8 +13,8 @@ module.exports = function transform(syntax) {
         var context = this;
         if (node) {
             transformers.forEach(function (transformer) {
-                if (transformer.matches(node, context)) {
-                    transformer.onMatch(node, context);
+                if (transformer.matches(context)) {
+                    transformer.onMatch(context);
                 }
             });
         }

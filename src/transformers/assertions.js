@@ -5,13 +5,16 @@ var assertions = ["ok", "notOk", "equal", "notEqual", "strictEqual",
     "throws", "raises", "expect"];
 
 module.exports = {
-    matches: function (node) {
+    matches: function (context) {
+        var node = context.node;
+
         return node.type === "CallExpression" &&
             node.callee &&
             node.callee.type === "Identifier" &&
             assertions.indexOf(node.callee.name) !== -1;
     },
-    onMatch: function (node, context) {
+    onMatch: function (context) {
+        var node = context.node;
         var memberName = node.callee.name;
 
         var updatedValue = extend({}, node, {
