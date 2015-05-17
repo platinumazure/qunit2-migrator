@@ -1,6 +1,6 @@
 var recast = require("recast");
 var fs = require("fs");
-var transform = require("../../transform");
+var transform = require("../../src/transform");
 
 module.exports = function (filePath, callback) {
     fs.readFile(filePath, "utf8", function (err, fileContents) {
