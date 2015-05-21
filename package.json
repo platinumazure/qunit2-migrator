@@ -1,20 +1,9 @@
 {
   "name": "qunit2-migrator",
-  "version": "0.3.1-pre",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/platinumazure/qunit2-migrator.git"
-  },
   "description": "Migration tool for creating QUnit test files which conform to QUnit 2.x API specifications.",
-  "main": "src/main.js",
-  "files": [
-    "src/main.js",
-    "src/transform.js",
-    "src/transformers"
-  ],
-  "scripts": {
-    "test": "grunt"
-  },
+  "version": "0.3.1-pre",
+  "author": "Kevin Partington",
+  "bin": "./src/main.js",
   "dependencies": {
     "extend": "2.0.1",
     "fs": "~0.0.2",
@@ -26,10 +15,22 @@
     "grunt": "0.4.5",
     "grunt-jasmine-nodejs": "1.4.0"
   },
+  "files": [
+    "src/main.js",
+    "src/transform.js",
+    "src/transformers"
+  ],
   "keywords": [
     "qunit",
     "qunit-2.0"
   ],
-  "author": "Kevin Partington",
-  "license": "MIT"
+  "license": "MIT",
+  "main": "src/main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/platinumazure/qunit2-migrator.git"
+  },
+  "scripts": {
+    "test": "grunt"
+  }
 }
