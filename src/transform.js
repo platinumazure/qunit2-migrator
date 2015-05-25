@@ -6,7 +6,8 @@ var transformers = [
     require("./transformers/test"),
     require("./transformers/assertions"),
     require("./transformers/moduleHooks"),
-    require("./transformers/moduleHooksAssert")
+    require("./transformers/moduleHooksAssert"),
+    require("./transformers/executionFunctionAsync")
 ];
 
 module.exports = function transform(syntax) {
