@@ -4,6 +4,7 @@ var traverse = require("traverse");
 var transformers = [
     require("./transformers/module"),
     require("./transformers/test"),
+    require("./transformers/asyncTest"),
     require("./transformers/assertions"),
     require("./transformers/moduleHooks"),
     require("./transformers/moduleHooksAssert"),
