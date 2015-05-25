@@ -16,6 +16,7 @@
     "grunt-jasmine-nodejs": "1.4.0"
   },
   "files": [
+    "src/helpers",
     "src/main.js",
     "src/transform.js",
     "src/transformers"
