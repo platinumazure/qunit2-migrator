@@ -240,7 +240,7 @@ function replaceStop (context, nextCallback) {
     // Preconditon: context is a CallExpression with callee in stop/QUnit.stop
     debugger;
 
-    var count = context.node.arguments && context.node.arguments[0].value || 1;
+    var count = context.node.arguments.length && context.node.arguments[0].value || 1;
     
     var newNode = {
         type: "VariableDeclaration",
@@ -281,7 +281,7 @@ function replaceStop (context, nextCallback) {
 function replaceStart (context, nextCallback) {
     // Preconditon: context is a CallExpression with callee in start/QUnit.start
 
-    var count = context.node.arguments && context.node.arguments[0].value || 1;
+    var count = context.node.arguments.length && context.node.arguments[0].value || 1;
     
     var newNode = {
         type: "CallExpression",
