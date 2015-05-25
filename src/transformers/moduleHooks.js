@@ -31,6 +31,7 @@ module.exports = {
             context.parent.node.type === "Property" &&
             context.parent.parent &&
             context.parent.parent.parent &&
+            context.parent.parent.parent.node &&
             context.parent.parent.parent.node.type === "ObjectExpression" &&
             context.parent.parent.parent.parent &&
             context.parent.parent.parent.parent.parent &&
