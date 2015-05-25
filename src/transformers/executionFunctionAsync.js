@@ -15,6 +15,17 @@ module.exports = {
 
         if (isAsyncTest(context.node)) {
             ++stopCount;
+            context.node.body.body.unshift({
+                type: "ExpressionStatement",
+                expression: {
+                    type: "CallExpression",
+                    callee: {
+                        type: "Identifier",
+                        name: "stop"
+                    },
+                    arguments: []
+                }
+            });
         }
 
         if (!stopCount) {
@@ -25,11 +36,11 @@ module.exports = {
         var startAsyncCallbackNames = generateAsyncCallbackNames(stopCount);
 
         traverse(context.node.body.body).forEach(function () {
-            if (this.node.type === "CallExpression") {
+            if (this.node && this.node.type === "CallExpression") {
                 if (isStop(this)) {
-                    replaceStop(this);
+                    replaceStop(this, stopAsyncCallbackNames.shift());
                 } else if (isStart(this)) {
-                    replaceStart(this);
+                    replaceStart(this, startAsyncCallbackNames.shift());
                 }
             }
         });
@@ -178,10 +189,55 @@ function isStart (context) {
     return isStart || isQUnitStart;
 }
 
-function replaceStop (context) {
-    // TODO: Implement
+function replaceStop (context, nextCallback) {
+    // Preconditon: context is a CallExpression with callee in stop/QUnit.stop
+    
+    var newNode = {
+        type: "VariableDeclaration",
+        kind: "var",
+        expression: void 0,
+        declarations: [
+            {
+                type: "VariableDeclarator",
+                id: nextCallback,
+                init: {
+                    type: "CallExpression",
+                    callee: {
+                        type: "MemberExpression",
+                        object: {
+                            type: "Identifier",
+                            name: "assert"
+                        },
+                        property: {
+                            type: "Identifier",
+                            name: "async"
+                        }
+                    },
+                    arguments: []
+                }
+            }
+        ]
+    };
+
+    // Updating parent because parent was ExpressionStatement and needs to be
+    // changed to VariableDeclaration
+    context.parent.after(function () {
+        this.update(extend({}, this.node, newNode));
+    });
 }
 
-function replaceStart (context) {
-    // TODO: Implement
+function replaceStart (context, nextCallback) {
+    // Preconditon: context is a CallExpression with callee in start/QUnit.start
+
+    var newNode = {
+        type: "CallExpression",
+        callee: {
+            type: "Identifier",
+            name: nextCallback
+        },
+        arguments: []
+    };
+
+    // No need to update parent: ExpressionStatement still works here
+    context.update(newNode);
 }
