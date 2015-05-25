@@ -13,7 +13,7 @@ module.exports = {
     onMatch: function (context) {
         var stopCount = countStops(context.node);
 
-        if (isAsyncTest(context.node)) {
+        if (isAsyncTest(context)) {
             ++stopCount;
             context.node.body.body.unshift({
                 type: "ExpressionStatement",
