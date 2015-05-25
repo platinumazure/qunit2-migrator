@@ -15,6 +15,9 @@ module.exports = {
 
         if (isAsyncTest(context)) {
             ++stopCount;
+
+            // Add an expression statement "stop()", which will be transformed
+            // further down.
             context.node.body.body.unshift({
                 type: "ExpressionStatement",
                 expression: {
@@ -35,12 +38,56 @@ module.exports = {
         var stopAsyncCallbackNames = generateAsyncCallbackNames(stopCount);
         var startAsyncCallbackNames = generateAsyncCallbackNames(stopCount);
 
+        var multipleStatementLocations = [];
+
         traverse(context.node.body.body).forEach(function () {
+            if (this.isRoot) {
+                this.after(function () {
+                    var statementArray = this.node;
+
+                    multipleStatementLocations.reverse().forEach(function (val) {
+                        var statements = generateStatements(val);
+
+                        statementArray.splice.apply(
+                            statementArray,
+                            [val.index + 1, 0].concat(statements)
+                        );
+                    });
+
+                    this.update(statementArray);
+                });
+            }
+
             if (this.node && this.node.type === "CallExpression") {
                 if (isStop(this)) {
-                    replaceStop(this, stopAsyncCallbackNames.shift());
+                    var count = replaceStop(this, stopAsyncCallbackNames.shift());
+                    if (count > 1) {
+                        var newLocation = {
+                            type: "stop",
+                            index: this.parent.key,
+                            count: count,
+                            callbacks: []
+                        };
+                        for (var i = 1; i < count; ++i) {
+                            newLocation.callbacks.push(stopAsyncCallbackNames.shift());
+                        }
+                        multipleStatementLocations.push(newLocation);
+                    }
                 } else if (isStart(this)) {
-                    replaceStart(this, startAsyncCallbackNames.shift());
+                    var count = replaceStart(this, startAsyncCallbackNames.shift());
+
+                    if (count > 1) {
+                        var newLocation = {
+                            type: "start",
+                            index: this.parent.key,
+                            count: count,
+                            callbacks: []
+                        };
+                        for (var i = 1; i < count; ++i) {
+                            newLocation.callbacks.push(startAsyncCallbackNames.shift());
+                        }
+                        multipleStatementLocations.push(newLocation);
+                    }
                 }
             }
         });
@@ -191,6 +238,9 @@ function isStart (context) {
 
 function replaceStop (context, nextCallback) {
     // Preconditon: context is a CallExpression with callee in stop/QUnit.stop
+    debugger;
+
+    var count = context.node.arguments && context.node.arguments[0].value || 1;
     
     var newNode = {
         type: "VariableDeclaration",
@@ -224,11 +274,15 @@ function replaceStop (context, nextCallback) {
     context.parent.after(function () {
         this.update(extend({}, this.node, newNode));
     });
+
+    return count;
 }
 
 function replaceStart (context, nextCallback) {
     // Preconditon: context is a CallExpression with callee in start/QUnit.start
 
+    var count = context.node.arguments && context.node.arguments[0].value || 1;
+    
     var newNode = {
         type: "CallExpression",
         callee: {
@@ -240,4 +294,54 @@ function replaceStart (context, nextCallback) {
 
     // No need to update parent: ExpressionStatement still works here
     context.update(newNode);
+
+    return count;
+}
+
+function generateStatements (statementInfo) {
+    var result = [];
+
+    for (var i = 1; i < statementInfo.count; ++i) {
+        if (statementInfo.type === "stop") {
+            result.push({
+                type: "VariableDeclaration",
+                kind: "var",
+                declarations: [
+                    {
+                        type: "VariableDeclarator",
+                        id: statementInfo.callbacks.shift(),
+                        init: {
+                            type: "CallExpression",
+                            callee: {
+                                type: "MemberExpression",
+                                object: {
+                                    type: "Identifier",
+                                    name: "assert"
+                                },
+                                property: {
+                                    type: "Identifier",
+                                    name: "async"
+                                }
+                            },
+                            arguments: []
+                        }
+                    }
+                ]
+            });
+        } else {
+            result.push({
+                type: "ExpressionStatement",
+                expression: {
+                    type: "CallExpression",
+                    callee: {
+                        type: "Identifier",
+                        name: statementInfo.callbacks.shift()
+                    },
+                    arguments: []
+                }
+            });
+        }
+    }
+
+    return result;
 }
