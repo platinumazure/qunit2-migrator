@@ -44,8 +44,9 @@ module.exports = {
     },
     onMatch: function (context) {
         var expectCount = context.node.arguments[1].value;
+        context.node.arguments.splice(1, 1);
 
-        context.node.arguments[2].body.body.unshift({
+        context.node.arguments[1].body.body.unshift({
             type: "ExpressionStatement",
             expression: {
                 type: "CallExpression",

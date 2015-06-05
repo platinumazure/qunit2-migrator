@@ -103,8 +103,8 @@ describe("test() with expect count", function () {
         });
     });
 
-    it("should not add or remove arguments to test()", function () {
-        expect(this.result.arguments.length).toBe(3);
+    it("should remove expect count argument from test()", function () {
+        expect(this.result.arguments.length).toBe(2);
     });
 
     it("should not modify test name", function () {
@@ -113,12 +113,12 @@ describe("test() with expect count", function () {
     });
 
     it("should still have a test callback function", function () {
-        expect(this.result.arguments[2].type).toBe("FunctionExpression");
+        expect(this.result.arguments[1].type).toBe("FunctionExpression");
     });
 
     it("should add an assert parameter to test callback", function () {
-        expect(this.result.arguments[2].params.length).toBe(1);
-        expect(this.result.arguments[2].params[0].type).toBe("Identifier");
-        expect(this.result.arguments[2].params[0].name).toBe("assert");
+        expect(this.result.arguments[1].params.length).toBe(1);
+        expect(this.result.arguments[1].params[0].type).toBe("Identifier");
+        expect(this.result.arguments[1].params[0].name).toBe("assert");
     });
 });
