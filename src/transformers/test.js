@@ -11,13 +11,17 @@ module.exports = {
     },
     onMatch: function (context) {
         var node = context.node;
-        var shouldAddAssert = node.arguments &&
+        var testCallbackArgument = node.arguments &&
             node.arguments[1] &&
-            node.arguments[1].params &&
-            node.arguments[1].params.length === 0;
+            (node.arguments[1].type === "FunctionExpression"
+                ? node.arguments[1] : node.arguments[2]);
+
+        var shouldAddAssert = testCallbackArgument &&
+            testCallbackArgument.params &&
+            testCallbackArgument.params.length === 0;
 
         if (shouldAddAssert) {
-            node.arguments[1].params.push({
+            testCallbackArgument.params.push({
                 type: "Identifier",
                 name: "assert"
             });
