@@ -8,6 +8,7 @@ var transformers = [
     require("./transformers/assertions"),
     require("./transformers/moduleHooks"),
     require("./transformers/moduleHooksAssert"),
+    require("./transformers/testWithExpect"),
     require("./transformers/executionFunctionAsync")
 ];
 
