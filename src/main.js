@@ -91,7 +91,7 @@ function processFile (options) {
                 syntax = transform(syntax);
                 writeOutput(
                     options.outputFile,
-                    recast.print(syntax).code,
+                    recast.prettyPrint(syntax, { useTabs: true }).code,
                     onOutput
                 );
                 break;
