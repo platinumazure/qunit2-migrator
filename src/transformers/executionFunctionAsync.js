@@ -238,8 +238,6 @@ function isStart (context) {
 
 function replaceStop (context, nextCallback) {
     // Preconditon: context is a CallExpression with callee in stop/QUnit.stop
-    debugger;
-
     var count = context.node.arguments.length && context.node.arguments[0].value || 1;
     
     var newNode = {
