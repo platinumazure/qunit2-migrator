@@ -109,7 +109,7 @@ describe("asyncTest() with three function argument", function () {
         });
     });
 
-    it("should not add or remove arguments to asyncTest()", function () {
+    it("should remove one argument from asyncTest()", function () {
         expect(this.result.arguments.length).toBe(2);
     });
 
