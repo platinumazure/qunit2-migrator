@@ -21,19 +21,38 @@ module.exports = {
 
         return isAsyncTest || isQUnitAsyncTest;
     },
+
+    isArgumentFunction: function(argument){
+        var isFunction = false;
+        if(argument.type === "FunctionExpression" && argument.params){
+            isFunction = true;
+        }
+
+        return isFunction;
+    },
+
+    /**
+     * Three parameters in asyncTest function.
+     * asyncTest: function (testName, expected, callback)
+     */
+    addAssert: function(node){
+        var i;
+        if(node.arguments && node.arguments.length && node.arguments.length > 1){
+            for(i = 1; i < node.arguments.length; i++){
+                if(this.isArgumentFunction(node.arguments[i])){
+                    node.arguments[i].params.push({
+                        type: "Identifier",
+                        name: "assert"
+                    });
+                }
+            }
+        }
+    },
+
     onMatch: function (context) {
         var node = context.node;
-        var shouldAddAssert = node.arguments &&
-            node.arguments[1] &&
-            node.arguments[1].params &&
-            node.arguments[1].params.length === 0;
 
-        if (shouldAddAssert) {
-            node.arguments[1].params.push({
-                type: "Identifier",
-                name: "assert"
-            });
-        }
+        this.addAssert(node);
 
         var updatedValue = extend({}, node, {
             callee: {
