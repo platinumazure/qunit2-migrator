@@ -1,7 +1,8 @@
 var fs = require("fs");
 var minimist = require("minimist");
 var recast = require("recast");
-
+var recursive = require('recursive-readdir');
+var deepCopy = require('deepcopy');
 var transform = require("./transform");
 
 var VALID_OUTPUT_MODES = ["syntaxTreePreTransform", "syntaxTreePostTransform", "transformedFile"];
@@ -17,7 +18,7 @@ function printUsageAndExit (errorMessage) {
 
     console.log("Usage: " +
         "node main.js " +
-        " [--outputMode=MODE] [--outputFile=FILE | --inPlace] INPUTFILE"
+        " [--outputMode=MODE] [--outputFile=FILE | --inPlace] INPUTPATH"
     );
 
     console.log("");
@@ -36,12 +37,14 @@ function writeOutput (outputFile, contents, callback) {
 }
 
 function onOutput (err) {
-    if (err) throw err;
-    process.exit(0);
+    if (err){
+        printUsageAndExit(err.message);
+        throw err;
+    }
 }
 
 function validateOptions (options) {
-    if (!options.inputFile) {
+    if (!options.inputPath) {
         throw new OptionValidationError("No input file was provided");
     }
 
@@ -49,19 +52,19 @@ function validateOptions (options) {
         throw new OptionValidationError("Invalid output mode");
     }
 
-    if (options.inPlace && options.outputFile) {
+    if ((options.inPlace && options.outputFile) || (options.inPlace && options.outputDirectory)) {
         throw new OptionValidationError(
             "Cannot set inPlace option and provide an output file"
         );
     } else if (options.inPlace) {
-        options.outputFile = options.inputFile;
+        options.outputFile = options.inputPath;
     }
 }
 
 function processFile (options) {
     validateOptions(options);
 
-    fs.readFile(options.inputFile, "utf8", function (err, contents) {
+    fs.readFile(options.inputPath, "utf8", function (err, contents) {
         if (err) throw err;
 
         var syntax = recast.parse(contents);
@@ -88,7 +91,7 @@ function processFile (options) {
                 syntax = transform(syntax);
                 writeOutput(
                     options.outputFile,
-                    recast.print(syntax).code,
+                    recast.prettyPrint(syntax, { useTabs: true }).code,
                     onOutput
                 );
                 break;
@@ -96,26 +99,50 @@ function processFile (options) {
     });
 }
 
+var processDirectory = function(options) {
+    var optionsCopy;
+    recursive(options.inputPath, ['*.cs', '*.html'], function (error, files) {
+        if (error) {
+            printUsageAndExit(err && err.message);
+            throw err;
+        }
+        else {
+            files.forEach(function (fileName) {
+                options.inputPath = fileName;
+                optionsCopy = deepCopy(options);
+                processFile(optionsCopy);
+            });
+        }
+    });
+};
+
 module.exports = processFile;
 
 if (require.main === module) {
     var argv = minimist(process.argv.slice(2), {
         default: {
             outputMode: "transformedFile",
-            outputFile: null
+            outputFile: null,
+            outputDirectory: null
         },
         boolean: ["inPlace"]
     });
 
     var options = {
-        inputFile: argv._[0],
+        inputPath: argv._[0],
         outputFile: argv.outputFile,
+        outputDirectory: argv.outputDirectory,
         outputMode: argv.outputMode,
         inPlace: argv.inPlace
     };
 
     try {
-        processFile(options);
+        if(fs.lstatSync(options.inputPath).isDirectory()){
+            processDirectory(options);
+        }
+        else{
+            processFile(options);
+        }
     } catch (err) {
         if (err instanceof OptionValidationError) {
             printUsageAndExit(err && err.message);
