@@ -1,4 +1,5 @@
 var extend = require("extend");
+var traverse = require('traverse');
 
 module.exports = {
     matches: function (context) {
@@ -42,11 +43,43 @@ module.exports = {
             node.arguments[1].type === "Literal" &&
             typeof node.arguments[1].value === "number";
     },
-    onMatch: function (context) {
-        var expectCount = context.node.arguments[1].value;
-        context.node.arguments.splice(1, 1);
 
-        context.node.arguments[1].body.body.unshift({
+    isExpectNeed: function(node){
+        var isExpect, isExpectFoundInBody = false;
+
+        traverse(node).forEach(function (subNode) {
+            isExpect = subNode &&
+                subNode.type &&
+                subNode.type === "ExpressionStatement" &&
+                subNode.expression &&
+                subNode.expression.type === "CallExpression" &&
+                subNode.expression.callee &&
+                subNode.expression.callee.type &&
+                subNode.expression.callee.type === "Identifier" &&
+                subNode.expression.callee.name &&
+                subNode.expression.callee.name === "expect" &&
+                subNode.expression.arguments &&
+                subNode.expression.arguments.length &&
+                subNode.expression.arguments.length === 1 &&
+                subNode.expression.arguments[0].type &&
+                subNode.expression.arguments[0].type === "Literal";
+            if (isExpect) {
+                isExpectFoundInBody = true;
+            }
+        });
+
+        return isExpectFoundInBody;
+    },
+
+    removeCountArgumentFromTestParameters: function(node){
+        var expectCount = node.arguments[1].value;
+        node.arguments.splice(1, 1);
+
+        return expectCount;
+    },
+
+    addExpectInBody: function(node, expectCount){
+        node.arguments[1].body.body.unshift({
             type: "ExpressionStatement",
             expression: {
                 type: "CallExpression",
@@ -69,6 +102,16 @@ module.exports = {
                 ]
             }
         });
+    },
+
+    onMatch: function (context) {
+        var isExpectFoundInBody, expectCount;
+        expectCount = this.removeCountArgumentFromTestParameters(context.node);
+        isExpectFoundInBody = this.isExpectNeed(context.node);
+
+        if(!isExpectFoundInBody){
+            this.addExpectInBody(context.node, expectCount);
+        }
 
         var updatedValue = extend({}, context.node, {
             callee: {
