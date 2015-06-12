@@ -116,7 +116,16 @@ var processDirectory = function(options) {
     });
 };
 
-module.exports = processFile;
+function process(options) {
+    if(fs.lstatSync(options.inputPath).isDirectory()){
+        processDirectory(options);
+    }
+    else{
+        processFile(options);
+    }
+}
+
+module.exports = process;
 
 if (require.main === module) {
     var argv = minimist(process.argv.slice(2), {
@@ -137,12 +146,7 @@ if (require.main === module) {
     };
 
     try {
-        if(fs.lstatSync(options.inputPath).isDirectory()){
-            processDirectory(options);
-        }
-        else{
-            processFile(options);
-        }
+        process(options);
     } catch (err) {
         if (err instanceof OptionValidationError) {
             printUsageAndExit(err && err.message);
