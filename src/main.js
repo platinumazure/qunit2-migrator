@@ -116,7 +116,7 @@ var processDirectory = function(options) {
     });
 };
 
-function process(options) {
+function processPath(options) {
     if(fs.lstatSync(options.inputPath).isDirectory()){
         processDirectory(options);
     }
@@ -125,7 +125,7 @@ function process(options) {
     }
 }
 
-module.exports = process;
+module.exports = processPath;
 
 if (require.main === module) {
     var argv = minimist(process.argv.slice(2), {
@@ -146,7 +146,7 @@ if (require.main === module) {
     };
 
     try {
-        process(options);
+        processPath(options);
     } catch (err) {
         if (err instanceof OptionValidationError) {
             printUsageAndExit(err && err.message);
