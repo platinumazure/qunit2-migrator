@@ -2,15 +2,16 @@ var fs = require("fs");
 var minimist = require("minimist");
 var recast = require("recast");
 var recursive = require('recursive-readdir');
+var path = require('path');
 var deepCopy = require('deepcopy');
 var transform = require("./transform");
-
+var globalModuleOptions = {};
 var VALID_OUTPUT_MODES = ["syntaxTreePreTransform", "syntaxTreePostTransform", "transformedFile"];
 
-function OptionValidationError (message) { this.message = message; }
+var OptionValidationError = function(message) { this.message = message; };
 OptionValidationError.prototype = new Error();
 
-function printUsageAndExit (errorMessage) {
+var printUsageAndExit = function(errorMessage) {
     if (errorMessage) {
         console.log(errorMessage);
         console.log("");
@@ -25,25 +26,33 @@ function printUsageAndExit (errorMessage) {
     console.log("Valid output modes are " +
         VALID_OUTPUT_MODES.map(function (m) { return '"' + m + '"' }).join(", ")
     );
-}
+};
 
-function writeOutput (outputFile, contents, callback) {
+var createDirectoryIfNotExist = function(outputFile){
+    var dirname = path.dirname(outputFile);
+    if (!fs.existsSync(dirname)){
+        fs.mkdirSync(dirname);
+    }
+};
+
+var writeOutput = function(outputFile, contents, callback) {
     if (outputFile) {
+        createDirectoryIfNotExist(outputFile);
         fs.writeFile(outputFile, contents, "utf8", callback);
     } else {
         console.log(contents);
         callback();
     }
-}
+};
 
-function onOutput (err) {
+var onOutput = function(err) {
     if (err){
         printUsageAndExit(err.message);
         throw err;
     }
-}
+};
 
-function validateOptions (options) {
+var validateOptions = function(options) {
     if (!options.inputPath) {
         throw new OptionValidationError("No input file was provided");
     }
@@ -59,9 +68,13 @@ function validateOptions (options) {
     } else if (options.inPlace) {
         options.outputFile = options.inputPath;
     }
-}
 
-function processFile (options) {
+    if(options.outputDirectory){
+        options.outputFile = options.inputPath.replace(globalModuleOptions.inputPath, options.outputDirectory);
+    }
+};
+
+var processFile = function(options) {
     validateOptions(options);
 
     fs.readFile(options.inputPath, "utf8", function (err, contents) {
@@ -97,7 +110,7 @@ function processFile (options) {
                 break;
         }
     });
-}
+};
 
 var processDirectory = function(options) {
     var optionsCopy;
@@ -116,14 +129,14 @@ var processDirectory = function(options) {
     });
 };
 
-function processPath(options) {
+var processPath = function(options) {
     if(fs.lstatSync(options.inputPath).isDirectory()){
         processDirectory(options);
     }
     else{
         processFile(options);
     }
-}
+};
 
 module.exports = processPath;
 
@@ -138,12 +151,14 @@ if (require.main === module) {
     });
 
     var options = {
-        inputPath: argv._[0],
+        inputPath: path.normalize(argv._[0]),
         outputFile: argv.outputFile,
-        outputDirectory: argv.outputDirectory,
+        outputDirectory: path.normalize(argv.outputDirectory),
         outputMode: argv.outputMode,
         inPlace: argv.inPlace
     };
+
+    globalModuleOptions = deepCopy(options);
 
     try {
         processPath(options);
