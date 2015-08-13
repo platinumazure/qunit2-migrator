@@ -91,7 +91,7 @@ function processFile (options) {
                 syntax = transform(syntax);
                 writeOutput(
                     options.outputFile,
-                    recast.prettyPrint(syntax, { useTabs: true }).code,
+                    recast.print(syntax, { useTabs: true }).code,
                     onOutput
                 );
                 break;
@@ -116,7 +116,16 @@ var processDirectory = function(options) {
     });
 };
 
-module.exports = processFile;
+function processPath(options) {
+    if(fs.lstatSync(options.inputPath).isDirectory()){
+        processDirectory(options);
+    }
+    else{
+        processFile(options);
+    }
+}
+
+module.exports = processPath;
 
 if (require.main === module) {
     var argv = minimist(process.argv.slice(2), {
@@ -137,12 +146,7 @@ if (require.main === module) {
     };
 
     try {
-        if(fs.lstatSync(options.inputPath).isDirectory()){
-            processDirectory(options);
-        }
-        else{
-            processFile(options);
-        }
+        processPath(options);
     } catch (err) {
         if (err instanceof OptionValidationError) {
             printUsageAndExit(err && err.message);

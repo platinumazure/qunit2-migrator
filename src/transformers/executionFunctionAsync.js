@@ -150,10 +150,11 @@ function isAsyncTest (context) {
 
 function isModuleHook (context) {
     var moduleHookKeys = ["setup", "teardown", "beforeEach", "afterEach"];
+    debugger;
 
     return context.key === "value" &&
-        context.parent.type === "Property" &&
         context.parent.node &&
+        context.parent.node.type === "Property" &&
         context.parent.node.key &&
         context.parent.node.key.type === "Identifier" &&
         moduleHookKeys.indexOf(context.parent.node.key.name) !== -1 &&
@@ -163,6 +164,7 @@ function isModuleHook (context) {
         context.parent.parent.parent.node.type === "ObjectExpression" &&
         context.parent.parent.parent.parent &&
         context.parent.parent.parent.parent.parent &&
+        context.parent.parent.parent.parent.parent.node &&
         context.parent.parent.parent.parent.parent.node.type === "CallExpression" &&
         context.parent.parent.parent.parent.parent.node.callee &&
         isModule(context.parent.parent.parent.parent.parent.node.callee);
