@@ -150,7 +150,6 @@ function isAsyncTest (context) {
 
 function isModuleHook (context) {
     var moduleHookKeys = ["setup", "teardown", "beforeEach", "afterEach"];
-    debugger;
 
     return context.key === "value" &&
         context.parent.node &&
