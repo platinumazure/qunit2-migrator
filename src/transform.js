@@ -8,7 +8,8 @@ var transformers = [
     require("./transformers/moduleHooks"),
     require("./transformers/moduleHooksAssert"),
     require("./transformers/testWithExpect"),
-    require("./transformers/executionFunctionAsync")
+    require("./transformers/executionFunctionAsync"),
+    require("./transformers/moveAsyncResolution")
 ];
 
 module.exports = function transform(syntax) {
