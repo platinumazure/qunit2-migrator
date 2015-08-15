@@ -1,0 +1,23 @@
+{
+    "extends": "eslint:recommended",
+    "plugins": [
+        "jasmine"
+    ],
+    "rules": {
+        "indent": [2, 4, { SwitchCase: 1 }],
+        "quotes": [2, "double"],
+        "linebreak-style": [2, "windows"],
+        "semi": [2, "always"],
+	"no-console": 0,
+	"jasmine/no-spec-dupes": [2, "branch"]
+    },
+    "env": {
+        "node": true
+    },
+    "globals": {
+	beforeEach: false,
+	describe: false,
+        expect: false,
+	it: false
+    }
+}

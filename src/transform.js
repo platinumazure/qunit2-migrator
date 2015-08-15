@@ -1,4 +1,3 @@
-var extend = require("extend");
 var traverse = require("traverse");
 
 var transformers = [
@@ -25,4 +24,4 @@ module.exports = function transform(syntax) {
     });
 
     return syntax;
-}
+};

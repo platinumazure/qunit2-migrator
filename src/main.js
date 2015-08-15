@@ -1,9 +1,9 @@
 var fs = require("fs");
 var minimist = require("minimist");
 var recast = require("recast");
-var recursive = require('recursive-readdir');
-var path = require('path');
-var deepCopy = require('deepcopy');
+var recursive = require("recursive-readdir");
+var path = require("path");
+var deepCopy = require("deepcopy");
 var transform = require("./transform");
 var globalModuleOptions = {};
 var VALID_OUTPUT_MODES = ["syntaxTreePreTransform", "syntaxTreePostTransform", "transformedFile"];
@@ -24,7 +24,7 @@ var printUsageAndExit = function(errorMessage) {
 
     console.log("");
     console.log("Valid output modes are " +
-        VALID_OUTPUT_MODES.map(function (m) { return '"' + m + '"' }).join(", ")
+        VALID_OUTPUT_MODES.map(function (m) { return "\"" + m + "\""; }).join(", ")
     );
 };
 
@@ -114,10 +114,10 @@ var processFile = function(options) {
 
 var processDirectory = function(options) {
     var optionsCopy;
-    recursive(options.inputPath, ['*.cs', '*.html'], function (error, files) {
+    recursive(options.inputPath, ["*.cs", "*.html"], function (error, files) {
         if (error) {
-            printUsageAndExit(err && err.message);
-            throw err;
+            printUsageAndExit(error && error.message);
+            throw error;
         }
         else {
             files.forEach(function (fileName) {

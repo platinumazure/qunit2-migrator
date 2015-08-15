@@ -9,7 +9,7 @@ module.exports = function (grunt) {
                         colors: true,
                         cleanStack: 1,
                         verbosity: 3,
-                        listStyle: "indent",
+                        listStyle: "indent"
                     }
                 }
             },

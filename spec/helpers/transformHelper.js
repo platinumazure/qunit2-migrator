@@ -9,4 +9,4 @@ module.exports = function (filePath, callback) {
         var syntax = recast.parse(fileContents);
         callback(null, transform(syntax).program);
     });
-}
+};

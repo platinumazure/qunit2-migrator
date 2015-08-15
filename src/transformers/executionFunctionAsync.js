@@ -41,6 +41,8 @@ module.exports = {
         var multipleStatementLocations = [];
 
         traverse(context.node.body.body).forEach(function () {
+            var count, newLocation, i;
+
             if (this.isRoot) {
                 this.after(function () {
                     var statementArray = this.node;
@@ -60,30 +62,30 @@ module.exports = {
 
             if (this.node && this.node.type === "CallExpression") {
                 if (isStop(this)) {
-                    var count = replaceStop(this, stopAsyncCallbackNames.shift());
+                    count = replaceStop(this, stopAsyncCallbackNames.shift());
                     if (count > 1) {
-                        var newLocation = {
+                        newLocation = {
                             type: "stop",
                             index: this.parent.key,
                             count: count,
                             callbacks: []
                         };
-                        for (var i = 1; i < count; ++i) {
+                        for (i = 1; i < count; ++i) {
                             newLocation.callbacks.push(stopAsyncCallbackNames.shift());
                         }
                         multipleStatementLocations.push(newLocation);
                     }
                 } else if (isStart(this)) {
-                    var count = replaceStart(this, startAsyncCallbackNames.shift());
+                    count = replaceStart(this, startAsyncCallbackNames.shift());
 
                     if (count > 1) {
-                        var newLocation = {
+                        newLocation = {
                             type: "start",
                             index: this.parent.key,
                             count: count,
                             callbacks: []
                         };
-                        for (var i = 1; i < count; ++i) {
+                        for (i = 1; i < count; ++i) {
                             newLocation.callbacks.push(startAsyncCallbackNames.shift());
                         }
                         multipleStatementLocations.push(newLocation);
