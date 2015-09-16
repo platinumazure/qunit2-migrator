@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var fs = require("fs");
 var minimist = require("minimist");
 var recast = require("recast");
