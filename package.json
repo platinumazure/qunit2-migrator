@@ -1,7 +1,7 @@
 {
   "name": "qunit2-migrator",
   "description": "Migration tool for creating QUnit test files which conform to QUnit 2.x API specifications.",
-  "version": "0.7.5-pre",
+  "version": "0.7.5",
   "author": "Kevin Partington",
   "bin": "./src/main.js",
   "dependencies": {
