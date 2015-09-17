@@ -155,7 +155,7 @@ if (require.main === module) {
     var options = {
         inputPath: path.normalize(argv._[0]),
         outputFile: argv.outputFile,
-        outputDirectory: path.normalize(argv.outputDirectory),
+        outputDirectory: argv.outputDirectory ? path.normalize(argv.outputDirectory) : null,
         outputMode: argv.outputMode,
         inPlace: argv.inPlace
     };
