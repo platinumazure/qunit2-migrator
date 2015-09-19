@@ -251,7 +251,10 @@ function replaceStop (context, nextCallback) {
         declarations: [
             {
                 type: "VariableDeclarator",
-                id: nextCallback,
+                id: {
+                    type: "Identifier",
+                    name: nextCallback
+                },
                 init: {
                     type: "CallExpression",
                     callee: {
@@ -311,7 +314,10 @@ function generateStatements (statementInfo) {
                 declarations: [
                     {
                         type: "VariableDeclarator",
-                        id: statementInfo.callbacks.shift(),
+                        id: {
+                            type: "Identifier",
+                            name: statementInfo.callbacks.shift()
+                        },
                         init: {
                             type: "CallExpression",
                             callee: {

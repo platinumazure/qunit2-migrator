@@ -44,7 +44,9 @@ describe("setup with async calls", function () {
         expect(declaration.type).toBe("VariableDeclaration");
         expect(declaration.kind).toBe("var");
         expect(declaration.declarations.length).toBe(1);
-        expect(declaration.declarations[0].id).toBe("done");
+        expect(declaration.declarations[0].id).toBeDefined();
+        expect(declaration.declarations[0].id.type).toBe("Identifier");
+        expect(declaration.declarations[0].id.name).toBe("done");
         expect(declaration.declarations[0].init).not.toEqual(null);
         expect(declaration.declarations[0].init.type).toBe("CallExpression");
         expect(declaration.declarations[0].init.callee).not.toEqual(null);
@@ -81,7 +83,9 @@ describe("teardown with async calls", function () {
         expect(declaration.type).toBe("VariableDeclaration");
         expect(declaration.kind).toBe("var");
         expect(declaration.declarations.length).toBe(1);
-        expect(declaration.declarations[0].id).toBe("done");
+        expect(declaration.declarations[0].id).toBeDefined();
+        expect(declaration.declarations[0].id.type).toBe("Identifier");
+        expect(declaration.declarations[0].id.name).toBe("done");
         expect(declaration.declarations[0].init).not.toEqual(null);
         expect(declaration.declarations[0].init.type).toBe("CallExpression");
         expect(declaration.declarations[0].init.callee).not.toEqual(null);
@@ -118,7 +122,9 @@ describe("setup with async calls (QUnit.module)", function () {
         expect(declaration.type).toBe("VariableDeclaration");
         expect(declaration.kind).toBe("var");
         expect(declaration.declarations.length).toBe(1);
-        expect(declaration.declarations[0].id).toBe("done");
+        expect(declaration.declarations[0].id).toBeDefined();
+        expect(declaration.declarations[0].id.type).toBe("Identifier");
+        expect(declaration.declarations[0].id.name).toBe("done");
         expect(declaration.declarations[0].init).not.toEqual(null);
         expect(declaration.declarations[0].init.type).toBe("CallExpression");
         expect(declaration.declarations[0].init.callee).not.toEqual(null);
@@ -155,7 +161,9 @@ describe("teardown with async calls (QUnit.module)", function () {
         expect(declaration.type).toBe("VariableDeclaration");
         expect(declaration.kind).toBe("var");
         expect(declaration.declarations.length).toBe(1);
-        expect(declaration.declarations[0].id).toBe("done");
+        expect(declaration.declarations[0].id).toBeDefined();
+        expect(declaration.declarations[0].id.type).toBe("Identifier");
+        expect(declaration.declarations[0].id.name).toBe("done");
         expect(declaration.declarations[0].init).not.toEqual(null);
         expect(declaration.declarations[0].init.type).toBe("CallExpression");
         expect(declaration.declarations[0].init.callee).not.toEqual(null);

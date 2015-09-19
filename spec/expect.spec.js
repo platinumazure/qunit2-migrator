@@ -71,9 +71,14 @@ describe("expect() in test body and in list of asyncTest() parameters", function
         expect(this.result.arguments[1].params[0].name).toBe("assert");
     });
 
-    it("should add in body only done() and expect() functions", function () {
+    it("should add in body done() and expect() functions", function () {
         expect(this.result.arguments[1].body.body.length).toBe(2);
-        expect(this.result.arguments[1].body.body[0].declarations[0].id).toBe("done");
+        expect(this.result.arguments[1].body.body[0].declarations).toBeDefined();
+        expect(this.result.arguments[1].body.body[0].declarations.length).toBe(1);
+        expect(this.result.arguments[1].body.body[0].declarations[0]).toBeDefined();
+        expect(this.result.arguments[1].body.body[0].declarations[0].id).toBeDefined();
+        expect(this.result.arguments[1].body.body[0].declarations[0].id.type).toBe("Identifier");
+        expect(this.result.arguments[1].body.body[0].declarations[0].id.name).toBe("done");
         expect(this.result.arguments[1].body.body[1].type).toBe("ExpressionStatement");
         expect(this.result.arguments[1].body.body[1].expression.type).toBe("CallExpression");
         expect(this.result.arguments[1].body.body[1].expression.callee.object.name).toBe("assert");
